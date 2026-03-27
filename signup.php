@@ -45,113 +45,99 @@ echo "<script>alert('Something went wrong. Please try again');</script>";
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <!--[if IE]>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <![endif]-->
     <title>Online Library Management System | Student Signup</title>
-    <!-- BOOTSTRAP CORE STYLE  -->
-    <link href="assets/css/bootstrap.css" rel="stylesheet" />
-    <!-- FONT AWESOME STYLE  -->
-    <link href="assets/css/font-awesome.css" rel="stylesheet" />
-    <!-- CUSTOM STYLE  -->
-    <link href="assets/css/style.css" rel="stylesheet" />
-    <!-- GOOGLE FONT -->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
-<script type="text/javascript">
-function valid()
-{
-if(document.signup.password.value!= document.signup.confirmpassword.value)
-{
-alert("Password and Confirm Password Field do not match  !!");
-document.signup.confirmpassword.focus();
-return false;
-}
-return true;
-}
-</script>
-<script>
-function checkAvailability() {
-$("#loaderIcon").show();
-jQuery.ajax({
-url: "check_availability.php",
-data:'emailid='+$("#emailid").val(),
-type: "POST",
-success:function(data){
-$("#user-availability-status").html(data);
-$("#loaderIcon").hide();
-},
-error:function (){}
-});
-}
-</script>    
-
+    <link href="assets/css/auth-style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="assets/js/jquery-1.10.2.js"></script>
+    <script type="text/javascript">
+    function valid()
+    {
+    if(document.signup.password.value!= document.signup.confirmpassword.value)
+    {
+    alert("Password and Confirm Password Field do not match  !!");
+    document.signup.confirmpassword.focus();
+    return false;
+    }
+    return true;
+    }
+    </script>
+    <script>
+    function checkAvailability() {
+    $("#loaderIcon").show();
+    jQuery.ajax({
+    url: "check_availability.php",
+    data:'emailid='+$("#emailid").val(),
+    type: "POST",
+    success:function(data){
+    $("#user-availability-status").html(data);
+    $("#loaderIcon").hide();
+    },
+    error:function (){}
+    });
+    }
+    </script>
 </head>
 <body>
-    <!------MENU SECTION START-->
-<?php include('includes/header.php');?>
-<!-- MENU SECTION END-->
-    <div class="content-wrapper">
-         <div class="container">
-        <div class="row pad-botm">
-            <div class="col-md-12">
-                <h4 class="header-line">User Signup</h4>
+    <div class="auth-wrapper">
+        <div class="auth-left" style="background: url('assets/img/libraryImg.jpg') no-repeat center center/cover;">
+            <div class="auth-left-logo">
+                <i class="fa fa-book"></i> Library System
+            </div>
+            <div class="auth-left-content">
+                <h1>Find your next great read</h1>
+                <p>Register to unlock our complete catalog<br>and manage your borrowing seamlessly</p>
+                <div class="auth-dots">
+                    <span></span>
+                    <span class="active"></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="auth-right">
+            <div class="auth-top-right">
+                <a href="index.php" class="btn-top">Sign In</a>
+            </div>
+            
+            <div class="auth-form-container">
+                <h2>Create Account</h2>
+                <p>Register as a new student</p>
                 
-                            </div>
+                <form name="signup" method="post" onSubmit="return valid();">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input class="form-control" type="text" name="fullanme" autocomplete="off" required placeholder="John Doe" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input class="form-control" type="text" name="mobileno" maxlength="10" autocomplete="off" required placeholder="1234567890" />
+                    </div>
+                                                
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input class="form-control" type="email" name="email" id="emailid" onBlur="checkAvailability()" autocomplete="off" required placeholder="example@gmail.com" />
+                        <span id="user-availability-status" style="font-size:12px; margin-top:5px; display:block;"></span> 
+                    </div>
 
-        </div>
-             <div class="row">
-           
-<div class="col-md-9 col-md-offset-1">
-               <div class="panel panel-danger">
-                        <div class="panel-heading">
-                           SINGUP FORM
-                        </div>
-                        <div class="panel-body">
-                            <form name="signup" method="post" onSubmit="return valid();">
-<div class="form-group">
-<label>Enter Full Name</label>
-<input class="form-control" type="text" name="fullanme" autocomplete="off" required />
-</div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input class="form-control" type="password" name="password" autocomplete="off" required placeholder="********" />
+                    </div>
 
-
-<div class="form-group">
-<label>Mobile Number :</label>
-<input class="form-control" type="text" name="mobileno" maxlength="10" autocomplete="off" required />
-</div>
-                                        
-<div class="form-group">
-<label>Enter Email</label>
-<input class="form-control" type="email" name="email" id="emailid" onBlur="checkAvailability()"  autocomplete="off" required  />
-   <span id="user-availability-status" style="font-size:12px;"></span> 
-</div>
-
-<div class="form-group">
-<label>Enter Password</label>
-<input class="form-control" type="password" name="password" autocomplete="off" required  />
-</div>
-
-<div class="form-group">
-<label>Confirm Password </label>
-<input class="form-control"  type="password" name="confirmpassword" autocomplete="off" required  />
-</div>
-                             
-<button type="submit" name="signup" class="btn btn-danger" id="submit">Register Now </button>
-
-                                    </form>
-                            </div>
-                        </div>
-                            </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input class="form-control" type="password" name="confirmpassword" autocomplete="off" required placeholder="********" />
+                    </div>
+                    
+                    <button type="submit" name="signup" class="btn-primary" id="submit">Register Now</button>
+                    
+                    <div class="auth-footer">
+                        Already have an account? <a href="index.php">Sign in</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-    </div>
-     <!-- CONTENT-WRAPPER SECTION END-->
-    <?php include('includes/footer.php');?>
-    <script src="assets/js/jquery-1.10.2.js"></script>
-    <!-- BOOTSTRAP SCRIPTS  -->
-    <script src="assets/js/bootstrap.js"></script>
-      <!-- CUSTOM SCRIPTS  -->
-    <script src="assets/js/custom.js"></script>
 </body>
 </html>

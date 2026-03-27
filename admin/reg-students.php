@@ -56,44 +56,273 @@ header('location:reg-students.php');
     <link href="assets/css/style.css" rel="stylesheet" />
     <!-- GOOGLE FONT -->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+    <!-- INTER FONT -->
+    <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap' rel='stylesheet'>
+
+    <style>
+        /* Modern Dashboard Specific Styles */
+        .dash-container {
+            padding: 20px 30px;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            background-color: #f8fafc;
+            min-height: calc(100vh - 150px);
+        }
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .dash-title h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .dash-title p {
+            margin: 8px 0 0 0;
+            color: #3b82f6;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        /* Table Box */
+        .table-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            border: 1px solid #f1f5f9;
+        }
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .table-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .overdue-table-wrapper {
+            overflow-x: auto;
+        }
+        
+        /* Table Customizations for DataTable */
+        table.dataTable {
+            width: 100% !important;
+            margin-top: 15px !important;
+            margin-bottom: 15px !important;
+        }
+        table.dataTable thead th, table.dataTable thead td {
+            text-align: left;
+            padding: 15px !important;
+            background-color: #f8fafc;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e2e8f0 !important;
+            border-top: none !important;
+        }
+        table.dataTable.no-footer {
+            border-bottom: 1px solid #e2e8f0;
+        }
+        table.dataTable tbody th, table.dataTable tbody td {
+            padding: 15px !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 500;
+            vertical-align: middle;
+            border-top: none !important;
+        }
+        table.table-bordered.dataTable {
+            border-collapse: collapse !important;
+            border: none;
+        }
+        
+        /* DataTables Wrapper overrides */
+        .dataTables_wrapper .row {
+            margin: 0;
+            align-items: center;
+        }
+        .dataTables_length label, .dataTables_filter label {
+            font-family: 'Inter', sans-serif;
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .dataTables_filter input {
+            padding: 8px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            margin-left: 10px;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+        .dataTables_filter input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .dataTables_length select {
+            padding: 6px 30px 6px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+            margin: 0 8px;
+            font-weight: 500;
+            color: #334155;
+        }
+        
+        /* Button Actions */
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-modern {
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .btn-inactive {
+            background-color: #fff1f2;
+            color: #e11d48;
+            border: 1px solid #fecdd3;
+        }
+        .btn-inactive:hover {
+            background-color: #ffe4e6;
+            color: #be123c;
+            text-decoration: none;
+        }
+        .btn-active {
+            background-color: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        .btn-active:hover {
+            background-color: #dcfce7;
+            color: #15803d;
+            text-decoration: none;
+        }
+        .btn-details {
+            background-color: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+        }
+        .btn-details:hover {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+            text-decoration: none;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+        }
+        .status-active {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .status-blocked {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+        
+        /* Pagination Modernization */
+        .pagination > li > a, .pagination > li > span {
+            color: #475569;
+            border-radius: 6px;
+            margin: 0 3px;
+            border: 1px solid #e2e8f0;
+            padding: 6px 12px;
+            font-weight: 500;
+        }
+        .pagination > .active > a, .pagination > .active > span, 
+        .pagination > .active > a:hover, .pagination > .active > span:hover, 
+        .pagination > .active > a:focus, .pagination > .active > span:focus {
+            background-color: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+        .pagination > li > a:hover, .pagination > li > span:hover, 
+        .pagination > li > a:focus, .pagination > li > span:focus {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+        div.dataTables_info {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        @media(max-width: 768px) {
+            .dash-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .dash-container { padding: 15px; }
+            .table-box { padding: 15px; }
+        }
+    </style>
 
 </head>
 <body>
       <!------MENU SECTION START-->
 <?php include('includes/header.php');?>
 <!-- MENU SECTION END-->
-    <div class="content-wrapper">
-         <div class="container">
-        <div class="row pad-botm">
-            <div class="col-md-12">
-                <h4 class="header-line">Manage Reg Students</h4>
-    </div>
 
-
+    <div class="dash-container">
+        <!-- Header -->
+        <div class="dash-header">
+            <div class="dash-title">
+                <h2>Manage Registered Students</h2>
+                <p>View, Activate, Block, and Check History of Students</p>
+            </div>
         </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <!-- Advanced Tables -->
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                          Reg Students
-                        </div>
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-bordered table-hover" id="dataTables-example">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Student ID</th>
-                                            <th>Student Name</th>
-                                            <th>Email id </th>
-                                            <th>Mobile Number</th>
-                                            <th>Reg Date</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
+
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Advanced Tables -->
+                <div class="table-box">
+                    <div class="table-header">
+                        <h3>Registered Students Directory</h3>
+                    </div>
+                    <div class="overdue-table-wrapper">
+                        <table class="table" id="dataTables-example">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Email ID</th>
+                                    <th>Mobile Number</th>
+                                    <th>Reg Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
 <?php $sql = "SELECT * from tblstudents";
 $query = $dbh -> prepare($sql);
 $query->execute();
@@ -103,50 +332,46 @@ if($query->rowCount() > 0)
 {
 foreach($results as $result)
 {               ?>                                      
-                                        <tr class="odd gradeX">
-                                            <td class="center"><?php echo htmlentities($cnt);?></td>
-                                            <td class="center"><?php echo htmlentities($result->StudentId);?></td>
-                                            <td class="center"><?php echo htmlentities($result->FullName);?></td>
-                                            <td class="center"><?php echo htmlentities($result->EmailId);?></td>
-                                            <td class="center"><?php echo htmlentities($result->MobileNumber);?></td>
-                                             <td class="center"><?php echo htmlentities($result->RegDate);?></td>
-                                            <td class="center"><?php if($result->Status==1)
-                                            {
-                                                echo htmlentities("Active");
-                                            } else {
-
-
-                                            echo htmlentities("Blocked");
-}
-                                            ?></td>
-                                            <td class="center">
-<?php if($result->Status==1)
- {?>
-<a href="reg-students.php?inid=<?php echo htmlentities($result->id);?>" onclick="return confirm('Are you sure you want to block this student?');" >  <button class="btn btn-danger"> Inactive</button>
-<?php } else {?>
-
-<a href="reg-students.php?id=<?php echo htmlentities($result->id);?>" onclick="return confirm('Are you sure you want to active this student?');"><button class="btn btn-primary"> Active</button> 
+                                <tr class="odd gradeX">
+                                    <td class="center"><?php echo htmlentities($cnt);?></td>
+                                    <td class="center" style="font-weight:600; color:#3b82f6;"><?php echo htmlentities($result->StudentId);?></td>
+                                    <td class="center" style="font-weight:600; color:#1e293b;"><?php echo htmlentities($result->FullName);?></td>
+                                    <td class="center"><?php echo htmlentities($result->EmailId);?></td>
+                                    <td class="center"><?php echo htmlentities($result->MobileNumber);?></td>
+                                    <td class="center"><?php echo htmlentities($result->RegDate);?></td>
+                                    <td class="center">
+                                        <?php if($result->Status==1) { ?>
+                                            <span class="status-badge status-active">Active</span>
+                                        <?php } else { ?>
+                                            <span class="status-badge status-blocked">Blocked</span>
+                                        <?php } ?>
+                                    </td>
+                                    <td class="center">
+                                        <div class="action-btns">
+                                            <?php if($result->Status==1) { ?>
+                                                <a href="reg-students.php?inid=<?php echo htmlentities($result->id);?>" onclick="return confirm('Are you sure you want to block this student?');" class="btn-modern btn-inactive">
+                                                    <i class="fa fa-ban"></i> Block
+                                                </a>
+                                            <?php } else { ?>
+                                                <a href="reg-students.php?id=<?php echo htmlentities($result->id);?>" onclick="return confirm('Are you sure you want to activate this student?');" class="btn-modern btn-active">
+                                                    <i class="fa fa-check-circle"></i> Activate
+                                                </a>
                                             <?php } ?>
-
-<a href="student-history.php?stdid=<?php echo htmlentities($result->StudentId);?>"><button class="btn btn-success"> Details</button> 
-
-                                          
-                                            </td>
-                                        </tr>
+                                            
+                                            <a href="student-history.php?stdid=<?php echo htmlentities($result->StudentId);?>" class="btn-modern btn-details">
+                                                <i class="fa fa-info-circle"></i> Details
+                                            </a> 
+                                        </div>
+                                    </td>
+                                </tr>
  <?php $cnt=$cnt+1;}} ?>                                      
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                        </div>
+                            </tbody>
+                        </table>
                     </div>
-                    <!--End Advanced Tables -->
                 </div>
+                <!--End Advanced Tables -->
             </div>
-
-
-            
-    </div>
+        </div>
     </div>
 
      <!-- CONTENT-WRAPPER SECTION END-->

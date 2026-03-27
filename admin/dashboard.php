@@ -2,21 +2,38 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
-if(strlen($_SESSION['alogin'])==0)
-  { 
-header('location:index.php');
+if (strlen($_SESSION['alogin']) == 0) 
+{
+    header('location:index.php');
 }
-else{?>
+else {
+    // Fetch statistics
+    $sql = "SELECT id from tblbooks ";
+    $query = $dbh->prepare($sql);
+    $query->execute();
+    $totalBooks = $query->rowCount();
+
+    $sql2 = "SELECT id from tblissuedbookdetails where (RetrunStatus='' || RetrunStatus is null)";
+    $query2 = $dbh->prepare($sql2);
+    $query2->execute();
+    $borrowedBooks = $query2->rowCount();
+
+    $sql3 = "SELECT id from tblstudents ";
+    $query3 = $dbh->prepare($sql3);
+    $query3->execute();
+    $totalMembers = $query3->rowCount();
+
+    $sql4 = "SELECT id FROM tblissuedbookdetails WHERE (RetrunStatus='' || RetrunStatus is null) AND IssuesDate < DATE_SUB(NOW(), INTERVAL 7 DAY)";
+    $query4 = $dbh->prepare($sql4);
+    $query4->execute();
+    $overdueBooks = $query4->rowCount();
+
+?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <!--[if IE]>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <![endif]-->
     <title>Online Library Management System | Admin Dash Board</title>
     <!-- BOOTSTRAP CORE STYLE  -->
     <link href="assets/css/bootstrap.css" rel="stylesheet" />
@@ -24,132 +41,449 @@ else{?>
     <link href="assets/css/font-awesome.css" rel="stylesheet" />
     <!-- CUSTOM STYLE  -->
     <link href="assets/css/style.css" rel="stylesheet" />
-    <!-- GOOGLE FONT -->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+    <style>
+        /* Modern Dashboard Specific Styles */
+        .dash-container {
+            padding: 10px 15px;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+        }
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .dash-title h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .dash-title p {
+            margin: 8px 0 0 0;
+            color: #3b82f6;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .dash-search {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .search-input {
+            position: relative;
+        }
+        .search-input i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        .search-input input {
+            padding: 10px 15px 10px 45px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            width: 320px;
+            font-size: 14px;
+            outline: none;
+            color: #334155;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .filter-btn {
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: #475569;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            font-size: 16px;
+        }
 
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9;
+        }
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-right: 20px;
+        }
+        .stat-icon.books { background-color: #e0f2fe; color: #0284c7; }
+        .stat-icon.borrowed { background-color: #e0e7ff; color: #4f46e5; }
+        .stat-icon.overdue { background-color: #fee2e2; color: #dc2626; }
+        .stat-icon.members { background-color: #e0f2fe; color: #0369a1; }
+        
+        .stat-info { flex-grow: 1; text-align: right; }
+        .stat-info span {
+            display: block;
+            color: #475569;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .stat-info h3 {
+            margin: 5px 0 0 0;
+            color: #1e293b;
+            font-size: 28px;
+            font-weight: 800;
+        }
+        .stat-info h3.danger { color: #dc2626; }
+        .stat-info h3.primary { color: #0284c7; }
+
+        /* Quick Actions Tabs */
+        .quick-actions-section {
+            margin-bottom: 25px;
+        }
+        .quick-actions-section h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e2e8f0;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+        .tab {
+            padding: 10px 0;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            position: relative;
+            text-decoration: none !important;
+        }
+        .tab a { color: inherit; text-decoration: none; }
+        .tab.active {
+            color: #2563eb;
+        }
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #2563eb;
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Table Box */
+        .table-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9;
+        }
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .table-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .table-header a {
+            color: #2563eb;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .overdue-table-wrapper {
+            overflow-x: auto;
+        }
+        .overdue-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        .overdue-table th {
+            text-align: left;
+            padding: 12px 15px;
+            background-color: #f8fafc;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .overdue-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .badge-danger-soft {
+            background-color: #fee2e2;
+            color: #dc2626;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .action-btns {
+            display: flex;
+            gap: 15px;
+        }
+        .action-btns button {
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 18px;
+            padding: 0;
+        }
+        .action-btns button:hover {
+            color: #0f172a;
+        }
+        
+        /* Pagination */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .pagination-controls {
+            display: flex;
+            gap: 15px;
+        }
+        .pagination-controls a {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .pagination-controls a:hover {
+            color: #2563eb;
+        }
+
+        @media(max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media(max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .dash-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .dash-search { width: 100%; }
+            .search-input { flex-grow: 1; }
+            .search-input input { width: 100%; }
+            .tabs { overflow-x: auto; white-space: nowrap; padding-bottom: 5px; }
+        }
+    </style>
 </head>
 <body>
-      <!------MENU SECTION START-->
-<?php include('includes/header.php');?>
-<!-- MENU SECTION END-->
-    <div class="content-wrapper">
-         <div class="container">
-        <div class="row pad-botm">
-            <div class="col-md-12">
-                <h4 class="header-line">ADMIN DASHBOARD</h4>
-                
-                            </div>
+<?php include('includes/header.php'); ?>
 
+    <div class="dash-container">
+        
+        <!-- Header -->
+        <div class="dash-header">
+            <div class="dash-title">
+                <h2>Welcome! Admin</h2>
+                <p><?php echo strtoupper(date('M d, Y | l, h.i A')); ?></p>
+            </div>
+            <div class="dash-search">
+                <div class="search-input">
+                    <i class="fa fa-search"></i>
+                    <input type="text" placeholder="Search books, authors, or members...">
+                </div>
+                <button class="filter-btn"><i class="fa fa-filter"></i></button>
+            </div>
         </div>
-             
-             <div class="row">
-<a href="manage-books.php">
- <div class="col-md-3 col-sm-3 col-xs-6">
- <div class="alert alert-success back-widget-set text-center">
- <i class="fa fa-book fa-5x"></i>
-<?php 
-$sql ="SELECT id from tblbooks ";
-$query = $dbh -> prepare($sql);
-$query->execute();
-$results=$query->fetchAll(PDO::FETCH_OBJ);
-$listdbooks=$query->rowCount();
-?>
-<h3><?php echo htmlentities($listdbooks);?></h3>
-Books Listed
-</div></div></a>
 
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon books"><i class="fa fa-book"></i></div>
+                <div class="stat-info">
+                    <span>Total Books</span>
+                    <h3 class="primary"><?php echo htmlentities($totalBooks); ?></h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon borrowed"><i class="fa fa-book"></i></div>
+                <div class="stat-info">
+                    <span>Borrowed Books</span>
+                    <h3 class="primary"><?php echo htmlentities($borrowedBooks); ?></h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon overdue"><i class="fa fa-exclamation-triangle"></i></div>
+                <div class="stat-info">
+                    <span>Overdue Books</span>
+                    <h3 class="danger"><?php echo htmlentities($overdueBooks); ?></h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon members"><i class="fa fa-users"></i></div>
+                <div class="stat-info">
+                    <span>Total Members</span>
+                    <h3 class="primary"><?php echo htmlentities($totalMembers); ?></h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="quick-actions-section">
+            <h3>Quick Actions</h3>
+            <div class="tabs">
+                <div class="tab active">Overview</div>
+                <div class="tab"><a href="add-book.php">Add New Book</a></div>
+                <div class="tab"><a href="reg-students.php">Register New Member</a></div>
+                
+            </div>
+        </div>
+
+        <!-- Overdue Table box -->
+        <div class="table-box">
+            <div class="table-header">
+                <h3>Overdue Books</h3>
+                <a href="manage-issued-books.php">Open Page <i class="fa fa-external-link"></i></a>
+            </div>
+            <div class="overdue-table-wrapper">
+                <table class="overdue-table">
+                    <thead>
+                        <tr>
+                            <th>BOOK TITLE</th>
+                            <th>BORROWER</th>
+                            <th>DUE DATE</th>
+                            <th>DAYS OVERDUE</th>
+                            <th>FINE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+    // Fetching real data for table to simulate the design
+    // We will just fetch currently issued books for demonstration
+    $sqlList = "SELECT tblbooks.BookName, tblstudents.FullName, tblissuedbookdetails.IssuesDate, tblissuedbookdetails.id, tblissuedbookdetails.fine 
+                                    FROM tblissuedbookdetails 
+                                    JOIN tblstudents ON tblstudents.StudentId=tblissuedbookdetails.StudentID 
+                                    JOIN tblbooks ON tblbooks.id=tblissuedbookdetails.BookId 
+                                    WHERE tblissuedbookdetails.RetrunStatus IS NULL OR tblissuedbookdetails.RetrunStatus=''
+                                    ORDER BY tblissuedbookdetails.id DESC LIMIT 5";
+    $queryList = $dbh->prepare($sqlList);
+    $queryList->execute();
+    $resultsList = $queryList->fetchAll(PDO::FETCH_OBJ);
+
+    if ($queryList->rowCount() > 0) {
+        foreach ($resultsList as $result) {
+            // Simulate due date 7 days after issue dates
+            $issueDateStr = $result->IssuesDate;
+            $dueDateObj = new DateTime($issueDateStr);
+            $dueDateObj->modify('+7 days');
+            $dueDate = $dueDateObj->format('Y-m-d');
+
+            $now = new DateTime();
+            $daysOverdue = 0;
+            if ($now > $dueDateObj) {
+                $interval = $now->diff($dueDateObj);
+                $daysOverdue = $interval->days;
+            }
+
+            // Mocking fine
+            $fineStr = "LKR " . max(50, ($daysOverdue * 10)) . ".00";
+
+?>
+                                <tr>
+                                    <td><?php echo htmlentities($result->BookName); ?></td>
+                                    <td><?php echo htmlentities($result->FullName); ?></td>
+                                    <td><?php echo htmlentities($dueDate); ?></td>
+                                    <td>
+                                        <?php if ($daysOverdue > 0) { ?>
+                                            <span class="badge-danger-soft"><i class="fa fa-exclamation-circle"></i> <?php echo htmlentities($daysOverdue); ?> Days</span>
+                                        <?php
+            }
+            else { ?>
+                                            <span style="color:#059669; font-weight:600;">Not Overdue</span>
+                                        <?php
+            }?>
+                                    </td>
+                                    <td><?php echo htmlentities($fineStr); ?></td>
+                                </tr>
+                                <?php
+        }
+    }
+    else { ?>
+                            <tr><td colspan="6" style="text-align:center;">No overdue books found.</td></tr>
+                        <?php
+    }?>
+                    </tbody>
+                </table>
+            </div>
             
-       
-             <a href="manage-issued-books.php">
-               <div class="col-md-3 col-sm-3 col-xs-6">
-                      <div class="alert alert-warning back-widget-set text-center">
-                            <i class="fa fa-recycle fa-5x"></i>
-<?php 
-$sql2 ="SELECT id from tblissuedbookdetails where (RetrunStatus='' || RetrunStatus is null)";
-$query2 = $dbh -> prepare($sql2);
-$query2->execute();
-$results2=$query2->fetchAll(PDO::FETCH_OBJ);
-$returnedbooks=$query2->rowCount();
-?>
+            <div class="pagination-container">
+                <div>Showing 1 to <?php echo min(5, $queryList->rowCount()); ?> of <?php echo $borrowedBooks; ?> entries</div>
+                <div class="pagination-controls">
+                    <a href="#" class="disabled"><i class="fa fa-angle-double-left"></i> Previous</a>
+                    <a href="#">Next <i class="fa fa-angle-double-right"></i></a>
+                </div>
+            </div>
+        </div>
 
-                            <h3><?php echo htmlentities($returnedbooks);?></h3>
-                          Books Not Returned Yet
-                        </div>
-                    </div>
-                </a>
-
-  <a href="reg-students.php">
-               <div class="col-md-3 col-sm-3 col-xs-6">
-                      <div class="alert alert-danger back-widget-set text-center">
-                            <i class="fa fa-users fa-5x"></i>
-                            <?php 
-$sql3 ="SELECT id from tblstudents ";
-$query3 = $dbh -> prepare($sql3);
-$query3->execute();
-$results3=$query3->fetchAll(PDO::FETCH_OBJ);
-$regstds=$query3->rowCount();
-?>
-                            <h3><?php echo htmlentities($regstds);?></h3>
-                           Registered Users
-                        </div>
-                    </div></a>
-
-
-  <a href="manage-authors.php">
- <div class="col-md-3 col-sm-3 col-xs-6">
-                      <div class="alert alert-success back-widget-set text-center">
-                            <i class="fa fa-user fa-5x"></i>
-<?php 
-$sq4 ="SELECT id from tblauthors ";
-$query4 = $dbh -> prepare($sq4);
-$query4->execute();
-$results4=$query4->fetchAll(PDO::FETCH_OBJ);
-$listdathrs=$query4->rowCount();
-?>
-<h3><?php echo htmlentities($listdathrs);?></h3>
-Authors Listed
-</div>
-</div></a>
-</div>
-
-
-
- <div class="row">
-
-
-
-  <a href="manage-categories.php">            
-<div class="col-md-3 col-sm-3 rscol-xs-6">
-<div class="alert alert-info back-widget-set text-center">
-<i class="fa fa-file-archive-o fa-5x"></i>
-<?php 
-$sql5 ="SELECT id from tblcategory ";
-$query5 = $dbh -> prepare($sql5);
-$query5->execute();
-$results5=$query5->fetchAll(PDO::FETCH_OBJ);
-$listdcats=$query5->rowCount();
-?>
-
-                            <h3><?php echo htmlentities($listdcats);?> </h3>
-                           Listed Categories
-                        </div>
-                    </div></a>
-             
-
-        </div>             
-            
     </div>
-    </div>
-     <!-- CONTENT-WRAPPER SECTION END-->
-<?php include('includes/footer.php');?>
-      <!-- FOOTER SECTION END-->
-    <!-- JAVASCRIPT FILES PLACED AT THE BOTTOM TO REDUCE THE LOADING TIME  -->
+
+<?php include('includes/footer.php'); ?>
     <!-- CORE JQUERY  -->
     <script src="assets/js/jquery-1.10.2.js"></script>
     <!-- BOOTSTRAP SCRIPTS  -->
     <script src="assets/js/bootstrap.js"></script>
-      <!-- CUSTOM SCRIPTS  -->
-    <script src="assets/js/custom.js"></script>
+    <script>
+        // Set the active tab dynamically
+        $('.tab').click(function(){
+            $('.tab').removeClass('active');
+            $(this).addClass('active');
+        });
+    </script>
 </body>
 </html>
-<?php } ?>
+<?php
+}?>
