@@ -3,57 +3,52 @@ session_start();
 error_reporting(0);
 include('includes/config.php');
 if(strlen($_SESSION['alogin'])==0)
-    {   
-header('location:index.php');
+{   
+    header('location:index.php');
 }
 else{ 
 
 if(isset($_POST['add']))
 {
-$bookname=$_POST['bookname'];
-$category=$_POST['category'];
-$author=$_POST['author'];
-$isbn=$_POST['isbn'];
-$price=$_POST['price'];
-$bookimg=$_FILES["bookpic"]["name"];
-$bqty=$_POST['bqty'];
-// get the image extension
-$extension = substr($bookimg,strlen($bookimg)-4,strlen($bookimg));
-// allowed extensions
-$allowed_extensions = array(".jpg","jpeg",".png",".gif");
-// Validation for allowed extensions .in_array() function searches an array for a specific value.
-//rename the image file
-$imgnewname=md5($bookimg.time()).$extension;
-// Code for move image into directory
-
-if(!in_array($extension,$allowed_extensions))
-{
-echo "<script>alert('Invalid format. Only jpg / jpeg/ png /gif format allowed');</script>";
-}
-else
-{
-move_uploaded_file($_FILES["bookpic"]["tmp_name"],"bookimg/".$imgnewname);
-$sql="INSERT INTO  tblbooks(BookName,CatId,AuthorId,ISBNNumber,BookPrice,bookImage,bookQty) VALUES(:bookname,:category,:author,:isbn,:price,:imgnewname,:bqty)";
-$query = $dbh->prepare($sql);
-$query->bindParam(':bookname',$bookname,PDO::PARAM_STR);
-$query->bindParam(':category',$category,PDO::PARAM_STR);
-$query->bindParam(':author',$author,PDO::PARAM_STR);
-$query->bindParam(':isbn',$isbn,PDO::PARAM_STR);
-$query->bindParam(':price',$price,PDO::PARAM_STR);
-$query->bindParam(':imgnewname',$imgnewname,PDO::PARAM_STR);
-$query->bindParam(':bqty',$bqty,PDO::PARAM_STR);
-$query->execute();
-$lastInsertId = $dbh->lastInsertId();
-if($lastInsertId)
-{
-echo "<script>alert('Book Listed successfully');</script>";
-echo "<script>window.location.href='manage-books.php'</script>";
-}
-else 
-{
-echo "<script>alert('Something went wrong. Please try again');</script>";    
-echo "<script>window.location.href='manage-books.php'</script>";
-}}
+    $bookname=$_POST['bookname'];
+    $category=$_POST['category'];
+    $author=$_POST['author'];
+    $isbn=$_POST['isbn'];
+    $price=$_POST['price'];
+    $bookimg=$_FILES["bookpic"]["name"];
+    $bqty=$_POST['bqty'];
+    $extension = substr($bookimg,strlen($bookimg)-4,strlen($bookimg));
+    $allowed_extensions = array(".jpg","jpeg",".png",".gif");
+    $imgnewname=md5($bookimg.time()).$extension;
+    
+    if(!in_array($extension,$allowed_extensions))
+    {
+        $error = 'Invalid format. Only jpg / jpeg / png / gif format allowed';
+    }
+    else
+    {
+        move_uploaded_file($_FILES["bookpic"]["tmp_name"],"bookimg/".$imgnewname);
+        $sql="INSERT INTO tblbooks(BookName,CatId,AuthorId,ISBNNumber,BookPrice,bookImage,bookQty) VALUES(:bookname,:category,:author,:isbn,:price,:imgnewname,:bqty)";
+        $query = $dbh->prepare($sql);
+        $query->bindParam(':bookname',$bookname,PDO::PARAM_STR);
+        $query->bindParam(':category',$category,PDO::PARAM_STR);
+        $query->bindParam(':author',$author,PDO::PARAM_STR);
+        $query->bindParam(':isbn',$isbn,PDO::PARAM_STR);
+        $query->bindParam(':price',$price,PDO::PARAM_STR);
+        $query->bindParam(':imgnewname',$imgnewname,PDO::PARAM_STR);
+        $query->bindParam(':bqty',$bqty,PDO::PARAM_STR);
+        $query->execute();
+        $lastInsertId = $dbh->lastInsertId();
+        if($lastInsertId)
+        {
+            $success = 'Book added successfully!';
+            header('location:manage-books.php');
+        }
+        else 
+        {
+            $error = 'Something went wrong. Please try again.';
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -61,154 +56,416 @@ echo "<script>window.location.href='manage-books.php'</script>";
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
     <title>Online Library Management System | Add Book</title>
-    <!-- BOOTSTRAP CORE STYLE  -->
+    <!-- BOOTSTRAP CORE STYLE -->
     <link href="assets/css/bootstrap.css" rel="stylesheet" />
-    <!-- FONT AWESOME STYLE  -->
+    <!-- FONT AWESOME STYLE -->
     <link href="assets/css/font-awesome.css" rel="stylesheet" />
-    <!-- CUSTOM STYLE  -->
+    <!-- CUSTOM STYLE -->
     <link href="assets/css/style.css" rel="stylesheet" />
-    <!-- GOOGLE FONT -->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
-<script type="text/javascript">
-    function checkisbnAvailability() {
-$("#loaderIcon").show();
-jQuery.ajax({
-url: "check_availability.php",
-data:'isbn='+$("#isbn").val(),
-type: "POST",
-success:function(data){
-$("#isbn-availability-status").html(data);
-$("#loaderIcon").hide();
-},
-error:function (){}
-});
-}
+    <!-- INTER FONT -->
+    <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap' rel='stylesheet'>
 
-</script>
+    <style>
+        .dash-container {
+            padding: 20px 30px;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            background-color: #f8fafc;
+            min-height: calc(100vh - 150px);
+        }
+
+        /* Page Header */
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .dash-title h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .dash-title p {
+            margin: 6px 0 0 0;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .back-btn:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+            text-decoration: none;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            border: 1px solid #f1f5f9;
+            overflow: hidden;
+        }
+        .form-card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 22px 28px;
+            border-bottom: 1px solid #f1f5f9;
+            background: linear-gradient(135deg, #f8fafc, #fff);
+        }
+        .form-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+        }
+        .form-card-title h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .form-card-title p {
+            margin: 3px 0 0 0;
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        .form-card-body {
+            padding: 30px 28px;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+        .form-grid .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Form Group */
+        .form-group-modern {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .form-group-modern label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #374151;
+            letter-spacing: 0.01em;
+        }
+        .form-group-modern label span.req {
+            color: #ef4444;
+            margin-left: 2px;
+        }
+        .form-control-modern {
+            padding: 11px 15px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 9px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #0f172a;
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            outline: none;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .form-control-modern:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+        select.form-control-modern {
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 13px center;
+            padding-right: 36px;
+            cursor: pointer;
+        }
+        input[type="file"].form-control-modern {
+            padding: 9px 14px;
+            cursor: pointer;
+        }
+        .form-hint {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 400;
+            margin-top: 3px;
+        }
+        .isbn-status {
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 3px;
+        }
+
+        /* Divider */
+        .form-divider {
+            border: none;
+            border-top: 1px solid #f1f5f9;
+            margin: 28px 0;
+        }
+
+        /* Action Buttons */
+        .form-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            justify-content: flex-end;
+            padding-top: 8px;
+        }
+        .btn-submit-modern {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-submit-modern:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(37,99,235,0.4);
+        }
+        .btn-cancel-modern {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            color: #475569;
+            padding: 12px 24px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-cancel-modern:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+            text-decoration: none;
+        }
+
+        /* Alert Messages */
+        .alert-modern {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .alert-modern.error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+        .alert-modern.success {
+            background: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        @media(max-width: 768px) {
+            .dash-container { padding: 15px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-card-body { padding: 20px; }
+            .form-card-header { padding: 18px 20px; }
+            .dash-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .form-actions { flex-direction: column-reverse; }
+            .btn-submit-modern, .btn-cancel-modern { width: 100%; justify-content: center; }
+        }
+    </style>
+
+    <script type="text/javascript">
+    function checkisbnAvailability() {
+        $("#loaderIcon").show();
+        jQuery.ajax({
+            url: "check_availability.php",
+            data:'isbn='+$("#isbn").val(),
+            type: "POST",
+            success:function(data){
+                $("#isbn-availability-status").html(data);
+                $("#loaderIcon").hide();
+            },
+            error:function (){}
+        });
+    }
+    </script>
 </head>
 <body>
-      <!------MENU SECTION START-->
-<?php include('includes/header.php');?>
-<!-- MENU SECTION END-->
-    <div class="content-wrapper">
-         <div class="container">
-        <div class="row pad-botm">
-            <div class="col-md-12">
-                <h4 class="header-line">Add Book</h4>
-                
-                            </div>
+<?php include('includes/header.php'); ?>
 
-</div>
-<div class="row">
-<div class="col-md-12 col-sm-12 col-xs-12">
-<div class="panel panel-info">
-<div class="panel-heading">
-Book Info
-</div>
-<div class="panel-body">
-<form role="form" method="post" enctype="multipart/form-data">
+<div class="dash-container">
 
-<div class="col-md-6">   
-<div class="form-group">
-<label>Book Name<span style="color:red;">*</span></label>
-<input class="form-control" type="text" name="bookname" autocomplete="off"  required />
-</div>
-</div>
-
-<div class="col-md-6">  
-<div class="form-group">
-<label> Category<span style="color:red;">*</span></label>
-<select class="form-control" name="category" required="required">
-<option value=""> Select Category</option>
-<?php 
-$status=1;
-$sql = "SELECT * from  tblcategory where Status=:status";
-$query = $dbh -> prepare($sql);
-$query -> bindParam(':status',$status, PDO::PARAM_STR);
-$query->execute();
-$results=$query->fetchAll(PDO::FETCH_OBJ);
-$cnt=1;
-if($query->rowCount() > 0)
-{
-foreach($results as $result)
-{               ?>  
-<option value="<?php echo htmlentities($result->id);?>"><?php echo htmlentities($result->CategoryName);?></option>
- <?php }} ?> 
-</select>
-</div></div>
-
-<div class="col-md-6">  
-<div class="form-group">
-<label> Author<span style="color:red;">*</span></label>
-<select class="form-control" name="author" required="required">
-<option value=""> Select Author</option>
-<?php 
-
-$sql = "SELECT * from  tblauthors ";
-$query = $dbh -> prepare($sql);
-$query->execute();
-$results=$query->fetchAll(PDO::FETCH_OBJ);
-$cnt=1;
-if($query->rowCount() > 0)
-{
-foreach($results as $result)
-{               ?>  
-<option value="<?php echo htmlentities($result->id);?>"><?php echo htmlentities($result->AuthorName);?></option>
- <?php }} ?> 
-</select>
-</div></div>
-
-<div class="col-md-6">  
-<div class="form-group">
-<label>ISBN Number<span style="color:red;">*</span></label>
-<input class="form-control" type="text" name="isbn" id="isbn" required="required" autocomplete="off" onBlur="checkisbnAvailability()"  />
-<p class="help-block">An ISBN is an International Standard Book Number.ISBN Must be unique</p>
-         <span id="isbn-availability-status" style="font-size:12px;"></span>
-</div></div>
-
-<div class="col-md-6">  
- <div class="form-group">
- <label>Price<span style="color:red;">*</span></label>
- <input class="form-control" type="text" name="price" autocomplete="off"   required="required" />
- </div>
-</div>
-
-<div class="col-md-6">  
- <div class="form-group">
- <label>Book Picture<span style="color:red;">*</span></label>
- <input class="form-control" type="file" name="bookpic" autocomplete="off"   required="required" />
- </div>
-    </div>
-
-<div class="col-md-6">  
- <div class="form-group">
- <label>Book Quantity<span style="color:red;">*</span></label>
- <input class="form-control" type="text" name="bqty" autocomplete="off"   required="required" />
- </div>
-</div>
-<div class="col-md-12"> 
-<button type="submit" name="add" id="add" class="btn btn-info">Submit </button>
-</div>
- </div>
-</div>
-                            </div>
-
+    <!-- Page Header -->
+    <div class="dash-header">
+        <div class="dash-title">
+            <h2>Add New Book</h2>
+            <p>Fill in the details below to add a new book to the library</p>
         </div>
-   
+        <a href="manage-books.php" class="back-btn"><i class="fa fa-arrow-left"></i> Back to Books</a>
     </div>
+
+    <?php if(isset($error) && $error): ?>
+        <div class="alert-modern error"><i class="fa fa-exclamation-circle"></i> <?php echo htmlspecialchars($error); ?></div>
+    <?php endif; ?>
+    <?php if(isset($success) && $success): ?>
+        <div class="alert-modern success"><i class="fa fa-check-circle"></i> <?php echo htmlspecialchars($success); ?></div>
+    <?php endif; ?>
+
+    <!-- Form Card -->
+    <div class="form-card">
+        <div class="form-card-header">
+            <div class="form-card-icon"><i class="fa fa-book"></i></div>
+            <div class="form-card-title">
+                <h3>Book Information</h3>
+                <p>All fields marked with <span style="color:#ef4444;">*</span> are required</p>
+            </div>
+        </div>
+
+        <div class="form-card-body">
+            <form role="form" method="post" enctype="multipart/form-data">
+
+                <div class="form-grid">
+
+                    <!-- Book Name -->
+                    <div class="form-group-modern">
+                        <label>Book Name <span class="req">*</span></label>
+                        <input class="form-control-modern" type="text" name="bookname" placeholder="e.g. The Great Gatsby" autocomplete="off" required />
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-group-modern">
+                        <label>Category <span class="req">*</span></label>
+                        <select class="form-control-modern" name="category" required>
+                            <option value="">Select Category</option>
+                            <?php 
+                            $status=1;
+                            $sql = "SELECT * from tblcategory where Status=:status";
+                            $query = $dbh->prepare($sql);
+                            $query->bindParam(':status',$status, PDO::PARAM_STR);
+                            $query->execute();
+                            $results=$query->fetchAll(PDO::FETCH_OBJ);
+                            if($query->rowCount() > 0) {
+                                foreach($results as $result) { ?>
+                                    <option value="<?php echo htmlentities($result->id); ?>"><?php echo htmlentities($result->CategoryName); ?></option>
+                                <?php }
+                            } ?>
+                        </select>
+                    </div>
+
+                    <!-- Author -->
+                    <div class="form-group-modern">
+                        <label>Author <span class="req">*</span></label>
+                        <select class="form-control-modern" name="author" required>
+                            <option value="">Select Author</option>
+                            <?php 
+                            $sql = "SELECT * from tblauthors";
+                            $query = $dbh->prepare($sql);
+                            $query->execute();
+                            $results=$query->fetchAll(PDO::FETCH_OBJ);
+                            if($query->rowCount() > 0) {
+                                foreach($results as $result) { ?>
+                                    <option value="<?php echo htmlentities($result->id); ?>"><?php echo htmlentities($result->AuthorName); ?></option>
+                                <?php }
+                            } ?>
+                        </select>
+                    </div>
+
+                    <!-- ISBN Number -->
+                    <div class="form-group-modern">
+                        <label>ISBN Number <span class="req">*</span></label>
+                        <input class="form-control-modern" type="text" name="isbn" id="isbn" required autocomplete="off" onBlur="checkisbnAvailability()" placeholder="e.g. 978-3-16-148410-0" />
+                        <span class="form-hint">ISBN must be unique across all books.</span>
+                        <span id="isbn-availability-status" class="isbn-status"></span>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="form-group-modern">
+                        <label>Price <span class="req">*</span></label>
+                        <input class="form-control-modern" type="text" name="price" placeholder="e.g. 299.00" autocomplete="off" required />
+                    </div>
+
+                    <!-- Book Quantity -->
+                    <div class="form-group-modern">
+                        <label>Book Quantity <span class="req">*</span></label>
+                        <input class="form-control-modern" type="number" name="bqty" min="1" placeholder="e.g. 5" autocomplete="off" required />
+                    </div>
+
+                    <!-- Book Cover Image (full width) -->
+                    <div class="form-group-modern full-width">
+                        <label>Book Cover Image <span class="req">*</span></label>
+                        <input class="form-control-modern" type="file" name="bookpic" accept=".jpg,.jpeg,.png,.gif" required />
+                        <span class="form-hint">Accepted formats: JPG, JPEG, PNG, GIF</span>
+                    </div>
+
+                </div>
+
+                <hr class="form-divider">
+
+                <div class="form-actions">
+                    <a href="manage-books.php" class="btn-cancel-modern"><i class="fa fa-times"></i> Cancel</a>
+                    <button type="submit" name="add" id="add" class="btn-submit-modern">
+                        <i class="fa fa-plus-circle"></i> Add Book
+                    </button>
+                </div>
+
+            </form>
+        </div>
     </div>
-     <!-- CONTENT-WRAPPER SECTION END-->
-  <?php include('includes/footer.php');?>
-      <!-- FOOTER SECTION END-->
-    <!-- JAVASCRIPT FILES PLACED AT THE BOTTOM TO REDUCE THE LOADING TIME  -->
-    <!-- CORE JQUERY  -->
+
+</div>
+
+<?php include('includes/footer.php'); ?>
+    <!-- CORE JQUERY -->
     <script src="assets/js/jquery-1.10.2.js"></script>
-    <!-- BOOTSTRAP SCRIPTS  -->
+    <!-- BOOTSTRAP SCRIPTS -->
     <script src="assets/js/bootstrap.js"></script>
-      <!-- CUSTOM SCRIPTS  -->
+    <!-- CUSTOM SCRIPTS -->
     <script src="assets/js/custom.js"></script>
 </body>
 </html>

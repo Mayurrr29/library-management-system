@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-* {
+*, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -8,7 +8,7 @@
 }
 
 body {
-    background-color: #f4f7f6;
+    background: #f7f8f8;
     height: 100vh;
     display: flex;
     align-items: center;
@@ -17,18 +17,18 @@ body {
     overflow: hidden;
 }
 
+/* ── Split layout ── */
 .auth-wrapper {
     display: flex;
     width: 100vw;
     height: 100vh;
     background: #fff;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
 }
 
+/* ── Left panel ── */
 .auth-left {
     flex: 1;
     position: relative;
-    background: url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop') no-repeat center center/cover;
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -40,70 +40,81 @@ body {
 .auth-left::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.1) 100%);
+    inset: 0;
+    background: linear-gradient(to top, rgba(5, 30, 28, 0.88) 0%, rgba(5, 30, 28, 0.4) 55%, rgba(5, 30, 28, 0.15) 100%);
     z-index: 1;
 }
 
+/* Brand mark top-left */
 .auth-left-logo {
     position: absolute;
-    top: 3rem;
+    top: 2.5rem;
     left: 3rem;
     z-index: 2;
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 1.25rem;
-    font-weight: 500;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: rgba(255,255,255,0.95);
 }
 
 .auth-left-logo i {
-    background: #fff;
-    color: #000;
-    padding: 0.5rem;
-    border-radius: 50%;
-    font-size: 1.5rem;
+    display: none; /* Remove icon from brand */
+}
+
+.auth-left-logo::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: #4ec8c0;
+    flex-shrink: 0;
 }
 
 .auth-left-content {
     position: relative;
     z-index: 2;
-    padding-bottom: 2rem;
+    padding-bottom: 1.5rem;
 }
 
 .auth-left-content h1 {
-    font-size: 3rem;
+    font-size: 2.25rem;
     font-weight: 700;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     line-height: 1.2;
+    letter-spacing: -0.5px;
 }
 
 .auth-left-content p {
-    font-size: 1.1rem;
-    opacity: 0.8;
-    margin-bottom: 2rem;
-    line-height: 1.5;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 1.75rem;
+    line-height: 1.6;
 }
 
 .auth-dots {
     display: flex;
-    gap: 8px;
+    gap: 6px;
 }
 
 .auth-dots span {
-    width: 8px;
-    height: 8px;
-    background: rgba(255,255,255,0.4);
+    width: 6px;
+    height: 6px;
+    background: rgba(255,255,255,0.3);
     border-radius: 50%;
     display: block;
 }
 
 .auth-dots span.active {
-    width: 24px;
-    background: #fff;
-    border-radius: 4px;
+    width: 20px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 3px;
 }
 
+/* ── Right panel ── */
 .auth-right {
     flex: 1;
     display: flex;
@@ -111,12 +122,13 @@ body {
     position: relative;
     overflow-y: auto;
     background: #ffffff;
+    border-left: 1px solid #f0f0f0;
 }
 
 .auth-top-right {
     display: flex;
     justify-content: flex-end;
-    padding: 2rem 3rem;
+    padding: 1.75rem 2.5rem;
     position: absolute;
     top: 0;
     right: 0;
@@ -124,180 +136,142 @@ body {
 }
 
 .auth-top-right .btn-top {
-    background: #000;
-    color: #fff;
+    background: transparent;
+    color: #374151;
     text-decoration: none;
-    padding: 0.7rem 1.5rem;
-    border-radius: 30px;
-    font-size: 0.9rem;
+    padding: 0.55rem 1.25rem;
+    border-radius: 7px;
+    font-size: 0.85rem;
     font-weight: 500;
-    transition: 0.3s;
+    transition: 0.2s;
+    border: 1px solid #e4e4e4;
 }
 
 .auth-top-right .btn-top:hover {
-    background: #333;
+    background: #f7f8f8;
+    border-color: #d1d5db;
+    color: #111827;
 }
 
+/* ── Form container ── */
 .auth-form-container {
     margin: auto;
     width: 100%;
-    max-width: 450px;
-    padding: 3rem 0;
+    max-width: 400px;
+    padding: 3rem 2rem;
 }
 
 .auth-form-container h2 {
-    font-size: 2rem;
-    color: #1a1a1a;
+    font-size: 1.6rem;
+    color: #111827;
     font-weight: 700;
-    margin-bottom: 0.5rem;
-    text-align: center;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.5px;
 }
 
 .auth-form-container > p {
-    color: #666;
-    margin-bottom: 2.5rem;
-    text-align: center;
-    font-size: 0.95rem;
+    color: #6b7280;
+    margin-bottom: 2rem;
+    font-size: 0.875rem;
 }
 
+/* ── Form fields ── */
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     text-align: left;
 }
 
 .form-group label {
     display: block;
-    color: #4a4a4a;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.45rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .form-control {
     width: 100%;
-    padding: 0.9rem 1rem;
-    border: 1px solid #ccc;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid #e4e4e4;
     border-radius: 8px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     outline: none;
-    transition: 0.3s;
-    background: #fff;
-    color: #333;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #f9f9f9;
+    color: #111827;
 }
 
 .form-control:focus {
-    border-color: #000;
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+    border-color: #18534f;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(24, 83, 79, 0.08);
 }
 
+/* ── Actions row ── */
 .form-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
 }
 
 .form-actions label {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: #4a4a4a;
+    gap: 7px;
+    color: #374151;
     cursor: pointer;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.85rem;
+    margin-bottom: 0;
 }
 
 .form-actions a {
-    color: #666;
+    color: #18534f;
     text-decoration: none;
-    transition: 0.2s;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: 0.15s;
 }
 
 .form-actions a:hover {
-    color: #000;
+    color: #0f3d3a;
 }
 
+/* ── Primary button ── */
 .btn-primary {
     width: 100%;
-    padding: 1rem;
-    background: #1a1a1a;
+    padding: 0.85rem;
+    background: #18534f;
     color: #fff;
     border: none;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.3s;
+    transition: background 0.2s;
+    letter-spacing: 0.1px;
 }
 
 .btn-primary:hover {
-    background: #000;
+    background: #0f3d3a;
 }
 
-.divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin: 2rem 0;
-    color: #aaa;
-    font-size: 0.85rem;
-}
-
-.divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 1px solid #eee;
-}
-
-.divider::not(:empty)::before {
-    margin-right: .5em;
-}
-
-.divider::not(:empty)::after {
-    margin-left: .5em;
-}
-
-.social-login {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.btn-social {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 0.8rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: #fff;
-    color: #555;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.btn-social:hover {
-    background: #fafafa;
-    border-color: #ccc;
-}
-
-.btn-social img {
-    width: 18px;
-    height: 18px;
-}
-
+/* ── Footer link ── */
 .auth-footer {
     text-align: center;
-    font-size: 0.9rem;
-    color: #666;
-    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: #4b5563;
+    margin-top: 1.25rem;
 }
 
 .auth-footer a {
-    color: #0056b3;
+    color: #18534f;
     text-decoration: none;
     font-weight: 600;
 }
@@ -306,18 +280,26 @@ body {
     text-decoration: underline;
 }
 
-/* Responsive adjustments */
-@media(max-width: 900px) {
+/* ── Email status ── */
+#user-availability-status {
+    font-size: 0.78rem;
+    margin-top: 4px;
+    display: block;
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
     .auth-left {
         display: none;
     }
+    .auth-right {
+        border-left: none;
+    }
     .auth-top-right {
-        justify-content: center;
         position: relative;
-        padding: 1rem;
-        background: #f9f9f9;
+        padding: 1rem 1.5rem;
     }
     .auth-form-container {
-        padding: 2rem;
+        padding: 2rem 1.5rem;
     }
 }

@@ -318,6 +318,40 @@ else {
             .search-input input { width: 100%; }
             .tabs { overflow-x: auto; white-space: nowrap; padding-bottom: 5px; }
         }
+
+        /* Embedded Search bar (below stats, above table) */
+        .dash-search-bar {
+            margin-bottom: 25px;
+        }
+        .search-input-full {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .search-input-full i {
+            position: absolute;
+            left: 16px;
+            color: #94a3b8;
+            font-size: 15px;
+            pointer-events: none;
+        }
+        .search-input-full input {
+            width: 100%;
+            padding: 12px 18px 12px 46px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #334155;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            outline: none;
+            transition: all 0.2s;
+        }
+        .search-input-full input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
     </style>
 </head>
 <body>
@@ -328,15 +362,8 @@ else {
         <!-- Header -->
         <div class="dash-header">
             <div class="dash-title">
-                <h2>Welcome! Admin</h2>
-                <p><?php echo strtoupper(date('M d, Y | l, h.i A')); ?></p>
-            </div>
-            <div class="dash-search">
-                <div class="search-input">
-                    <i class="fa fa-search"></i>
-                    <input type="text" placeholder="Search books, authors, or members...">
-                </div>
-                <button class="filter-btn"><i class="fa fa-filter"></i></button>
+                <h2>Welcome! <?php echo htmlspecialchars(ucfirst($_SESSION['alogin'])); ?></h2>
+                <p id="live-datetime">Loading...</p>
             </div>
         </div>
 
@@ -369,6 +396,14 @@ else {
                     <span>Total Members</span>
                     <h3 class="primary"><?php echo htmlentities($totalMembers); ?></h3>
                 </div>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="dash-search-bar">
+            <div class="search-input-full">
+                <i class="fa fa-search"></i>
+                <input type="text" id="dashboardSearch" placeholder="Search by book title, borrower name..." oninput="filterOverdueTable(this.value)">
             </div>
         </div>
 
@@ -477,11 +512,41 @@ else {
     <!-- BOOTSTRAP SCRIPTS  -->
     <script src="assets/js/bootstrap.js"></script>
     <script>
+        // Live clock
+        function updateClock() {
+            var now = new Date();
+            var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+            var day = days[now.getDay()].toUpperCase();
+            var date = String(now.getDate()).padStart(2,'0');
+            var month = months[now.getMonth()];
+            var year = now.getFullYear();
+            var hours = now.getHours();
+            var minutes = String(now.getMinutes()).padStart(2,'0');
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            var hStr = String(hours).padStart(2,'0');
+            var el = document.getElementById('live-datetime');
+            if (el) el.textContent = month + ' ' + date + ', ' + year + ' | ' + day + ', ' + hStr + '.' + minutes + ' ' + ampm;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
         // Set the active tab dynamically
         $('.tab').click(function(){
             $('.tab').removeClass('active');
             $(this).addClass('active');
         });
+
+        // Filter overdue table rows
+        function filterOverdueTable(query) {
+            query = query.toLowerCase().trim();
+            var rows = document.querySelectorAll('.overdue-table tbody tr');
+            rows.forEach(function(row) {
+                var text = row.textContent.toLowerCase();
+                row.style.display = (!query || text.indexOf(query) !== -1) ? '' : 'none';
+            });
+        }
     </script>
 </body>
 </html>

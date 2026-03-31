@@ -28,7 +28,7 @@ else {        echo "<script>alert('Invalid Details');</script>";    }
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Online Library Management System | User Login</title>
+    <title>Library Management System | Member Login</title>
     <link href="assets/css/auth-style.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
@@ -36,7 +36,7 @@ else {        echo "<script>alert('Invalid Details');</script>";    }
     <div class="auth-wrapper">
         <div class="auth-left" style="background: url('assets/img/libraryImg.jpg') no-repeat center center/cover;">
             <div class="auth-left-logo">
-                <i class="fa fa-book"></i> Library System
+                LibraryMS
             </div>
             <div class="auth-left-content">
                 <h1>Find your next great read</h1>

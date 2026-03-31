@@ -45,7 +45,7 @@ echo "<script>alert('Something went wrong. Please try again');</script>";
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <title>Online Library Management System | Student Signup</title>
+    <title>Library Management System | Create Account</title>
     <link href="assets/css/auth-style.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="assets/js/jquery-1.10.2.js"></script>
@@ -81,7 +81,7 @@ echo "<script>alert('Something went wrong. Please try again');</script>";
     <div class="auth-wrapper">
         <div class="auth-left" style="background: url('assets/img/libraryImg.jpg') no-repeat center center/cover;">
             <div class="auth-left-logo">
-                <i class="fa fa-book"></i> Library System
+                LibraryMS
             </div>
             <div class="auth-left-content">
                 <h1>Find your next great read</h1>
