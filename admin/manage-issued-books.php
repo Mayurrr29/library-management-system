@@ -343,12 +343,19 @@ else{
                                     <th>Book Name</th>
                                     <th>ISBN</th>
                                     <th>Issued Date</th>
+                                    <th>Due Date</th>
                                     <th>Return Date</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-<?php $sql = "SELECT tblstudents.FullName,tblbooks.BookName,tblbooks.ISBNNumber,tblissuedbookdetails.IssuesDate,tblissuedbookdetails.ReturnDate,tblissuedbookdetails.id as rid from  tblissuedbookdetails join tblstudents on tblstudents.StudentId=tblissuedbookdetails.StudentId join tblbooks on tblbooks.id=tblissuedbookdetails.BookId order by tblissuedbookdetails.id desc";
+<?php $sql = "SELECT tblstudents.FullName, tblbooks.BookName, tblbooks.ISBNNumber,
+               tblissuedbookdetails.IssuesDate, tblissuedbookdetails.DueDate,
+               tblissuedbookdetails.ReturnDate, tblissuedbookdetails.id as rid
+        FROM tblissuedbookdetails
+        JOIN tblstudents ON tblstudents.StudentId=tblissuedbookdetails.StudentId
+        JOIN tblbooks ON tblbooks.id=tblissuedbookdetails.BookId
+        ORDER BY tblissuedbookdetails.id DESC";
 $query = $dbh -> prepare($sql);
 $query->execute();
 $results=$query->fetchAll(PDO::FETCH_OBJ);
@@ -363,6 +370,25 @@ foreach($results as $result)
                                     <td class="center" style="font-weight:500;"><?php echo htmlentities($result->BookName);?></td>
                                     <td class="center"><?php echo htmlentities($result->ISBNNumber);?></td>
                                     <td class="center"><?php echo htmlentities($result->IssuesDate);?></td>
+                                    <td class="center">
+                                        <?php
+                                        $dueDisplay = '—';
+                                        $isOverdue = false;
+                                        if (!empty($result->DueDate)) {
+                                            $dueDisplay = date('d M Y', strtotime($result->DueDate));
+                                            if (empty($result->ReturnDate)) {
+                                                $today = new DateTime();
+                                                $dueD  = new DateTime($result->DueDate);
+                                                $isOverdue = ($today > $dueD);
+                                            }
+                                        }
+                                        if ($isOverdue) {
+                                            echo '<span class="status-danger"><i class="fa fa-exclamation-triangle"></i> ' . $dueDisplay . '</span>';
+                                        } else {
+                                            echo htmlentities($dueDisplay);
+                                        }
+                                        ?>
+                                    </td>
                                     <td class="center">
                                         <?php if($result->ReturnDate=="") { ?>
                                             <span class="status-danger">Not Returned Yet</span>

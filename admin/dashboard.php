@@ -437,35 +437,40 @@ else {
                     </thead>
                     <tbody>
                         <?php
-    // Fetching real data for table to simulate the design
-    // We will just fetch currently issued books for demonstration
-    $sqlList = "SELECT tblbooks.BookName, tblstudents.FullName, tblissuedbookdetails.IssuesDate, tblissuedbookdetails.id, tblissuedbookdetails.fine 
-                                    FROM tblissuedbookdetails 
-                                    JOIN tblstudents ON tblstudents.StudentId=tblissuedbookdetails.StudentID 
-                                    JOIN tblbooks ON tblbooks.id=tblissuedbookdetails.BookId 
-                                    WHERE tblissuedbookdetails.RetrunStatus IS NULL OR tblissuedbookdetails.RetrunStatus=''
-                                    ORDER BY tblissuedbookdetails.id DESC LIMIT 5";
+    // Fetch currently issued books with real DueDate
+    $sqlList = "SELECT tblbooks.BookName, tblstudents.FullName, tblissuedbookdetails.IssuesDate,
+                       tblissuedbookdetails.DueDate, tblissuedbookdetails.id, tblissuedbookdetails.fine 
+                FROM tblissuedbookdetails 
+                JOIN tblstudents ON tblstudents.StudentId=tblissuedbookdetails.StudentID 
+                JOIN tblbooks ON tblbooks.id=tblissuedbookdetails.BookId 
+                WHERE (tblissuedbookdetails.RetrunStatus IS NULL OR tblissuedbookdetails.RetrunStatus='')
+                ORDER BY tblissuedbookdetails.id DESC LIMIT 5";
     $queryList = $dbh->prepare($sqlList);
     $queryList->execute();
     $resultsList = $queryList->fetchAll(PDO::FETCH_OBJ);
 
     if ($queryList->rowCount() > 0) {
         foreach ($resultsList as $result) {
-            // Simulate due date 7 days after issue dates
-            $issueDateStr = $result->IssuesDate;
-            $dueDateObj = new DateTime($issueDateStr);
-            $dueDateObj->modify('+7 days');
-            $dueDate = $dueDateObj->format('Y-m-d');
-
             $now = new DateTime();
             $daysOverdue = 0;
+
+            // Use stored DueDate if available, else fall back to 14 days from issue
+            if (!empty($result->DueDate)) {
+                $dueDateObj = new DateTime($result->DueDate);
+            } else {
+                $dueDateObj = new DateTime($result->IssuesDate);
+                $dueDateObj->modify('+14 days');
+            }
+            $dueDate = $dueDateObj->format('d M Y');
+
             if ($now > $dueDateObj) {
                 $interval = $now->diff($dueDateObj);
                 $daysOverdue = $interval->days;
             }
 
-            // Mocking fine
-            $fineStr = "LKR " . max(50, ($daysOverdue * 10)) . ".00";
+            // Auto fine: ₹50 per day
+            $autoFine = $daysOverdue * 50;
+            $fineStr = "₹" . number_format($autoFine, 2);
 
 ?>
                                 <tr>

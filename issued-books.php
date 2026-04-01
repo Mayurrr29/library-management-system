@@ -417,7 +417,8 @@ if (strlen($_SESSION['login']) == 0) {
     <div class="ib-body">
         <?php
         $sql = "SELECT tblbooks.BookName, tblbooks.ISBNNumber, tblbooks.bookImage,
-                       tblissuedbookdetails.IssuesDate, tblissuedbookdetails.ReturnDate,
+                       tblissuedbookdetails.IssuesDate, tblissuedbookdetails.DueDate,
+                       tblissuedbookdetails.ReturnDate,
                        tblissuedbookdetails.id as rid, tblissuedbookdetails.fine
                 FROM tblissuedbookdetails
                 JOIN tblstudents ON tblstudents.StudentId = tblissuedbookdetails.StudentId
@@ -455,8 +456,9 @@ if (strlen($_SESSION['login']) == 0) {
                             <th style="width:52px;">Cover</th>
                             <th>Book</th>
                             <th>Issued Date</th>
+                            <th>Due Date</th>
                             <th>Status</th>
-                            <th>Fine</th>
+                            <th>Fine (₹)</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -465,14 +467,29 @@ if (strlen($_SESSION['login']) == 0) {
                             $bookImg = '';
                             if (!empty($result->bookImage)) {
                                 $imgPath = 'admin/bookimg/' . $result->bookImage;
-                                if (file_exists($imgPath)) {
-                                    $bookImg = $imgPath;
-                                }
+                                if (file_exists($imgPath)) $bookImg = $imgPath;
                             }
 
-                            // Format date nicely
-                            $issueDate = !empty($result->IssuesDate) ? date('d M Y, H:i', strtotime($result->IssuesDate)) : '—';
-                            $returnDate = !empty($result->ReturnDate) ? date('d M Y', strtotime($result->ReturnDate)) : null;
+                            // Format dates
+                            $issueDate  = !empty($result->IssuesDate) ? date('d M Y', strtotime($result->IssuesDate)) : '—';
+                            $returnDate = !empty($result->ReturnDate)  ? date('d M Y', strtotime($result->ReturnDate))  : null;
+
+                            // Due date + overdue?
+                            $dueDisplay = '—';
+                            $isOverdue  = false;
+                            $autoFine   = 0;
+                            if (!empty($result->DueDate)) {
+                                $dueDisplay = date('d M Y', strtotime($result->DueDate));
+                                if (empty($result->ReturnDate)) {
+                                    $today = new DateTime();
+                                    $dueD  = new DateTime($result->DueDate);
+                                    if ($today > $dueD) {
+                                        $isOverdue = true;
+                                        $diff = $today->diff($dueD);
+                                        $autoFine = $diff->days * 50;
+                                    }
+                                }
+                            }
                         ?>
                         <tr>
                             <td><span class="row-num"><?php echo $cnt; ?></span></td>
@@ -497,15 +514,28 @@ if (strlen($_SESSION['login']) == 0) {
                             </td>
                             <td><span class="date-cell"><?php echo $issueDate; ?></span></td>
                             <td>
+                                <?php if ($isOverdue): ?>
+                                    <span class="date-cell" style="color:#b91c1c; font-weight:700;">
+                                        <i class="fa fa-exclamation-triangle"></i> <?php echo $dueDisplay; ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="date-cell"><?php echo $dueDisplay; ?></span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
                                 <?php if (empty($result->ReturnDate)): ?>
-                                    <span class="badge-status badge-pending">Pending</span>
+                                    <span class="badge-status <?php echo $isOverdue ? 'badge-fine' : 'badge-pending'; ?>">
+                                        <?php echo $isOverdue ? 'Overdue' : 'Pending'; ?>
+                                    </span>
                                 <?php else: ?>
                                     <span class="badge-status badge-returned"><?php echo $returnDate; ?></span>
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <?php if (!empty($result->fine) && $result->fine > 0): ?>
-                                    <span class="badge-status badge-fine">&#8377; <?php echo number_format($result->fine, 2); ?></span>
+                                <?php
+                                $fineAmt = (!empty($result->fine) && $result->fine > 0) ? $result->fine : $autoFine;
+                                if ($fineAmt > 0): ?>
+                                    <span class="badge-status badge-fine">₹<?php echo number_format($fineAmt, 2); ?></span>
                                 <?php else: ?>
                                     <span class="badge-status badge-fine-none">No fine</span>
                                 <?php endif; ?>

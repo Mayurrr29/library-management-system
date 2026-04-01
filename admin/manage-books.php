@@ -332,16 +332,27 @@ header('location:manage-books.php');
                             <thead>
                                 <tr>
                                     <th style="width: 5%;">#</th>
-                                    <th style="width: 30%;">Book Name</th>
-                                    <th style="width: 15%;">Category</th>
-                                    <th style="width: 15%;">Author</th>
+                                    <th style="width: 28%;">Book Name</th>
+                                    <th style="width: 13%;">Category</th>
+                                    <th style="width: 13%;">Author</th>
                                     <th style="width: 10%;">ISBN</th>
-                                    <th style="width: 10%;">Price</th>
+                                    <th style="width: 9%;">Price</th>
+                                    <th style="width: 8%;">Qty</th>
+                                    <th style="width: 9%;">Available</th>
                                     <th style="width: 15%;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-<?php $sql = "SELECT tblbooks.BookName,tblcategory.CategoryName,tblauthors.AuthorName,tblbooks.ISBNNumber,tblbooks.BookPrice,tblbooks.id as bookid,tblbooks.bookImage from  tblbooks join tblcategory on tblcategory.id=tblbooks.CatId join tblauthors on tblauthors.id=tblbooks.AuthorId";
+<?php $sql = "SELECT tblbooks.BookName, tblcategory.CategoryName, tblauthors.AuthorName,
+               tblbooks.ISBNNumber, tblbooks.BookPrice, tblbooks.id as bookid,
+               tblbooks.bookImage, tblbooks.bookQty,
+               COUNT(CASE WHEN (tblissuedbookdetails.RetrunStatus IS NULL OR tblissuedbookdetails.RetrunStatus = '') 
+                          THEN tblissuedbookdetails.id END) AS issuedCount
+        FROM tblbooks
+        JOIN tblcategory ON tblcategory.id = tblbooks.CatId
+        JOIN tblauthors ON tblauthors.id = tblbooks.AuthorId
+        LEFT JOIN tblissuedbookdetails ON tblissuedbookdetails.BookId = tblbooks.id
+        GROUP BY tblbooks.id";
 $query = $dbh -> prepare($sql);
 $query->execute();
 $results=$query->fetchAll(PDO::FETCH_OBJ);
@@ -363,7 +374,18 @@ foreach($results as $result)
                                     <td class="center"><?php echo htmlentities($result->CategoryName);?></td>
                                     <td class="center"><?php echo htmlentities($result->AuthorName);?></td>
                                     <td class="center"><?php echo htmlentities($result->ISBNNumber);?></td>
-                                    <td class="center"><?php echo htmlentities($result->BookPrice);?></td>
+                                    <td class="center"><strong>₹<?php echo number_format($result->BookPrice, 2);?></strong></td>
+                                    <td class="center"><?php echo htmlentities($result->bookQty ?? 0);?></td>
+                                    <?php
+                                    $available = max(0, (int)($result->bookQty ?? 0) - (int)$result->issuedCount);
+                                    $availColor = $available > 0 ? '#16a34a' : '#dc2626';
+                                    $availBg = $available > 0 ? '#f0fdf4' : '#fef2f2';
+                                    ?>
+                                    <td class="center">
+                                        <span style="background:<?php echo $availBg;?>; color:<?php echo $availColor;?>; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:700;">
+                                            <?php echo $available; ?>
+                                        </span>
+                                    </td>
                                     <td class="center">
                                         <div class="action-btns">
                                             <a href="edit-book.php?bookid=<?php echo htmlentities($result->bookid);?>" class="btn-modern btn-edit">
