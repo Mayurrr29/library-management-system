@@ -25,8 +25,8 @@ if (strlen($_SESSION['login']) == 0) {
             }
 
             /* ════════════════════════
-           PAGE HEADER (greeting + stats)
-        ════════════════════════ */
+                   PAGE HEADER (greeting + stats)
+                ════════════════════════ */
             .dash-page-header {
                 background: #fff;
                 border-bottom: 1px solid #e8e8e8;
@@ -91,8 +91,8 @@ if (strlen($_SESSION['login']) == 0) {
             }
 
             /* ════════════════════════
-           HERO BANNER (library image)
-        ════════════════════════ */
+                   HERO BANNER (library image)
+                ════════════════════════ */
             .dash-hero {
                 position: relative;
                 height: 420px;
@@ -214,8 +214,8 @@ if (strlen($_SESSION['login']) == 0) {
             }
 
             /* ════════════════════════
-           SEARCH BANNER
-        ════════════════════════ */
+                   SEARCH BANNER
+                ════════════════════════ */
             .dash-search-section {
                 background: #18534f;
                 padding: 32px 48px;
@@ -308,8 +308,8 @@ if (strlen($_SESSION['login']) == 0) {
             }
 
             /* ════════════════════════
-           SERVICES STRIP
-        ════════════════════════ */
+                   SERVICES STRIP
+                ════════════════════════ */
             .services-strip {
                 background: #fff;
                 border-top: 1px solid #e8e8e8;
@@ -352,8 +352,8 @@ if (strlen($_SESSION['login']) == 0) {
             }
 
             /* ════════════════════════
-           SECTION COMMON
-        ════════════════════════ */
+                   SECTION COMMON
+                ════════════════════════ */
             .dash-section {
                 padding: 36px 48px;
             }
@@ -390,8 +390,8 @@ if (strlen($_SESSION['login']) == 0) {
             }
 
             /* ════════════════════════
-           QUICK ACCESS
-        ════════════════════════ */
+                   QUICK ACCESS
+                ════════════════════════ */
             .quick-access {
                 background: #fff;
                 border-top: 1px solid #e8e8e8;
@@ -434,8 +434,8 @@ if (strlen($_SESSION['login']) == 0) {
             }
 
             /* ════════════════════════
-           BOOK ROW (horizontal scroll)
-        ════════════════════════ */
+                   BOOK ROW (horizontal scroll)
+                ════════════════════════ */
             .book-row {
                 display: flex;
                 gap: 14px;
@@ -485,8 +485,8 @@ if (strlen($_SESSION['login']) == 0) {
             }
 
             /* ════════════════════════
-           LIBRARY PHOTO GALLERY
-        ════════════════════════ */
+                   LIBRARY PHOTO GALLERY
+                ════════════════════════ */
             .photo-gallery {
                 display: grid;
                 grid-template-columns: 2fr 1fr 1fr;
@@ -530,8 +530,8 @@ if (strlen($_SESSION['login']) == 0) {
             }
 
             /* ════════════════════════
-           CATEGORY GRID
-        ════════════════════════ */
+                   CATEGORY GRID
+                ════════════════════════ */
             .cat-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -583,8 +583,8 @@ if (strlen($_SESSION['login']) == 0) {
             }
 
             /* ════════════════════════
-           ABOUT SECTION
-        ════════════════════════ */
+                   ABOUT SECTION
+                ════════════════════════ */
             .about-section {
                 background: #fff;
                 border-top: 1px solid #e8e8e8;
@@ -686,8 +686,8 @@ if (strlen($_SESSION['login']) == 0) {
             }
 
             /* ════════════════════════
-           HOURS BANNER
-        ════════════════════════ */
+                   HOURS BANNER
+                ════════════════════════ */
             .hours-banner {
                 background: #0c3a36;
                 padding: 32px 48px;
@@ -731,8 +731,8 @@ if (strlen($_SESSION['login']) == 0) {
             }
 
             /* ════════════════════════
-           NOTICE STRIP
-        ════════════════════════ */
+                   NOTICE STRIP
+                ════════════════════════ */
             .notice-strip {
                 background: #fffbeb;
                 border-top: 1px solid #fde68a;
@@ -853,7 +853,8 @@ if (strlen($_SESSION['login']) == 0) {
                                 <option value="">All Categories</option>
                                 <?php foreach ($cats as $c): ?>
                                     <option value="<?php echo htmlentities($c->id); ?>">
-                                        <?php echo htmlentities($c->CategoryName); ?></option>
+                                        <?php echo htmlentities($c->CategoryName); ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -952,7 +953,7 @@ if (strlen($_SESSION['login']) == 0) {
                         <div class="photo-gallery__item__caption">Main Reading Hall</div>
                     </div>
                     <div class="photo-gallery__item">
-                        <img src="https://images.unsplash.com/photo-1555116505-38ab61800c2b?auto=format&fit=crop&w=600&q=80"
+                        <img src="https://images.unsplash.com/photo-1601330676094-f67a35e167db?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                             alt="Book shelves" loading="lazy">
                         <div class="photo-gallery__item__caption">Book Stacks</div>
                     </div>
@@ -1001,7 +1002,8 @@ if (strlen($_SESSION['login']) == 0) {
                             <div class="cat-card__body">
                                 <div class="cat-card__name"><?php echo htmlentities($cat->CategoryName); ?></div>
                                 <div class="cat-card__count"><?php echo $book_count; ?>
-                                    <?php echo $book_count == 1 ? 'book' : 'books'; ?></div>
+                                    <?php echo $book_count == 1 ? 'book' : 'books'; ?>
+                                </div>
                             </div>
                         </a>
                     <?php endforeach; ?>
