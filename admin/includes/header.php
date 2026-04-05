@@ -371,6 +371,10 @@ document.addEventListener('click', function(e) {
                     class="fa fa-list-alt"></i> Issued Books <i class="fa fa-angle-right arrow"></i></a></li>
         <li><a href="issue-book.php" class="<?php echo ($current_page == 'issue-book.php') ? 'active' : ''; ?>"><i
                     class="fa fa-share-square-o"></i> Issue Book <i class="fa fa-angle-right arrow"></i></a></li>
+        <li><a href="manage-requests.php" class="<?php echo ($current_page == 'manage-requests.php') ? 'active' : ''; ?>"><i
+                    class="fa fa-envelope-o"></i> Book Requests <i class="fa fa-angle-right arrow"></i></a></li>
+        <li><a href="manage-borrow-requests.php" class="<?php echo ($current_page == 'manage-borrow-requests.php') ? 'active' : ''; ?>"><i
+                    class="fa fa-hand-paper-o"></i> Borrow Requests <i class="fa fa-angle-right arrow"></i></a></li>
 
 
         <li><a href="change-password.php"

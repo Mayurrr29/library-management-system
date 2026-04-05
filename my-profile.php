@@ -105,81 +105,84 @@ if (strlen($_SESSION['login']) == 0) {
 
     .identity-card__top {
         background: #18534f;
-        height: 64px;
+        height: 100px;
     }
 
     .identity-card__body {
-        padding: 0 20px 20px;
+        padding: 0 20px 24px;
         text-align: center;
     }
 
     .avatar-wrap {
         position: relative;
         display: inline-block;
-        margin-top: -28px;
-        margin-bottom: 12px;
+        margin-top: -48px;
+        margin-bottom: 16px;
     }
 
     .avatar-wrap__img {
-        width: 56px;
-        height: 56px;
-        border-radius: 12px;
+        width: 96px;
+        height: 96px;
+        border-radius: 20px;
         object-fit: cover;
-        border: 3px solid #fff;
+        border: 4px solid #fff;
         display: block;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     .avatar-wrap__initials {
-        width: 56px;
-        height: 56px;
-        border-radius: 12px;
+        width: 96px;
+        height: 96px;
+        border-radius: 20px;
         background: #18534f;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #fff;
         font-weight: 700;
-        font-size: 22px;
-        border: 3px solid #fff;
+        font-size: 36px;
+        border: 4px solid #fff;
         margin: 0 auto;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     .avatar-upload-btn {
         position: absolute;
         bottom: -4px;
         right: -4px;
-        width: 22px;
-        height: 22px;
-        border-radius: 6px;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
         background: #18534f;
-        border: 2px solid #fff;
+        border: 3px solid #fff;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         color: #fff;
-        font-size: 9px;
-        transition: background 0.2s;
+        font-size: 13px;
+        transition: transform 0.2s, background 0.2s;
     }
 
-    .avatar-upload-btn:hover { background: #0f3d3a; }
+    .avatar-upload-btn:hover { 
+        background: #0f3d3a;
+        transform: scale(1.05);
+    }
 
     #avatar-file-input { display: none; }
 
     .identity-card__name {
-        font-size: 15px;
+        font-size: 18px;
         font-weight: 700;
         color: #111827;
-        margin-bottom: 2px;
+        margin-bottom: 4px;
         letter-spacing: -0.2px;
     }
 
     .identity-card__email {
-        font-size: 12px;
+        font-size: 13.5px;
         color: #6b7280;
-        margin-bottom: 16px;
+        margin-bottom: 24px;
         word-break: break-all;
     }
 
@@ -212,15 +215,15 @@ if (strlen($_SESSION['login']) == 0) {
 
     .identity-card__meta {
         border-top: 1px solid #f3f4f6;
-        padding-top: 14px;
+        padding-top: 18px;
         text-align: left;
     }
 
     .meta-row {
         display: flex;
         justify-content: space-between;
-        padding: 7px 0;
-        font-size: 12.5px;
+        padding: 8px 0;
+        font-size: 13px;
         border-bottom: 1px solid #f9f9f9;
     }
 

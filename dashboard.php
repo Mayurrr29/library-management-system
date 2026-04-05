@@ -902,6 +902,7 @@ if (strlen($_SESSION['login']) == 0) {
                         class="quick-access__link"><?php echo htmlentities($qc->CategoryName); ?></a>
                 <?php endforeach; ?>
                 <a href="issued-books.php" class="quick-access__link">My Borrowings</a>
+                <a href="my-borrow-requests.php" class="quick-access__link">Borrow Requests</a>
             </div>
 
             <!-- ── Recently Added Books ── -->
@@ -922,7 +923,7 @@ if (strlen($_SESSION['login']) == 0) {
                             if (empty($bk->bookImage) || !file_exists($img)) {
                                 $img = 'https://via.placeholder.com/300x450/e8e8e8/9ca3af?text=' . urlencode($bk->BookName);
                             }
-                            echo '<a href="listed-books.php" class="book-thumb"><img src="' . $img . '" alt="' . htmlentities($bk->BookName) . '"></a>';
+                            echo '<a href="book-detail.php?bookid=' . htmlentities($bk->id) . '" class="book-thumb"><img src="' . $img . '" alt="' . htmlentities($bk->BookName) . '"></a>';
                         }
                     } else {
                         $placeholders = [

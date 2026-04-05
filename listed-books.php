@@ -399,7 +399,7 @@ if (strlen($_SESSION['login']) == 0) {
                         $img = 'https://via.placeholder.com/300x450/e8e8e8/9ca3af?text=' . urlencode($result->BookName);
                     }
             ?>
-            <div class="book-card-item">
+            <a href="book-detail.php?bookid=<?php echo htmlentities($result->bookid); ?>" class="book-card-item" style="color: inherit; text-decoration: none;">
                 <div class="book-img-wrap">
                     <img src="<?php echo $img; ?>" alt="<?php echo htmlentities($result->BookName); ?>">
                 </div>
@@ -416,7 +416,7 @@ if (strlen($_SESSION['login']) == 0) {
                         <?php endif; ?>
                     </div>
                 </div>
-            </div>
+            </a>
             <?php endforeach;
             else: ?>
             <div class="empty-state">
@@ -433,7 +433,69 @@ if (strlen($_SESSION['login']) == 0) {
 <?php include('includes/footer.php'); ?>
 <script src="assets/js/jquery-1.10.2.js"></script>
 <script src="assets/js/bootstrap.js"></script>
-<script src="assets/js/custom.js"></script>
+<script>
+$(document).ready(function() {
+    console.log('Document is ready! Binding events...');
+    let debounceTimer;
+    
+    function performSearch() {
+        const query = $('.lb-search-input').val();
+        const cat = $('.lb-filter-select').val();
+        
+        $.ajax({
+            url: 'search-books-ajax.php',
+            type: 'GET',
+            data: { search: query, cat: cat },
+            dataType: 'json',
+            success: function(res) {
+                if (res.status === 'success') {
+                    $('.lb-grid').html(res.html);
+                    
+                    let countText = '<strong>' + res.count + '</strong> book' + (res.count !== 1 ? 's' : '') + ' found';
+                    if (res.catName) {
+                        countText += ' in <strong>' + res.catName + '</strong>';
+                    }
+                    $('.lb-results-count').html(countText);
+
+                    // Show clear button if search or cat is present
+                    if (query || cat) {
+                        if ($('.lb-clear-btn').length === 0) {
+                            $('.lb-search-btn').after(' <a href="listed-books.php" class="lb-clear-btn">Clear</a>');
+                        }
+                    } else {
+                        $('.lb-clear-btn').remove();
+                    }
+
+                    // Update URL without reloading
+                    let newUrl = window.location.pathname;
+                    let urlParams = new URLSearchParams();
+                    if(query) urlParams.set('search', query);
+                    if(cat) urlParams.set('cat', cat);
+                    if(urlParams.toString()) newUrl += '?' + urlParams.toString();
+                    window.history.replaceState({path: newUrl}, '', newUrl);
+                }
+            }
+        });
+    }
+
+    $('.lb-search-input').on('keyup input', function() {
+        console.log('Typing detected...');
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(performSearch, 300);
+    });
+
+    $('.lb-filter-select').on('change', function() {
+        console.log('Category changed...');
+        performSearch();
+    });
+
+    $('form').on('submit', function(e) {
+        console.log('Form submitted...');
+        e.preventDefault();
+        performSearch();
+    });
+});
+</script>
 </body>
 </html>
 <?php } ?>

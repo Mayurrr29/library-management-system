@@ -1,4 +1,4 @@
-﻿
+
 /*=============================================================
     Authour URI: www.binarytheme.com
     License: Commons Attribution 3.0
@@ -14,16 +14,18 @@
     "use strict";
     var mainApp = {
         slide_fun: function () {
-
-            $('#carousel-example').carousel({
-                interval:3000 // THIS TIME IS IN MILLI SECONDS
-            })
-
+            if ($('#carousel-example').length > 0) {
+                $('#carousel-example').carousel({
+                    interval:3000 // THIS TIME IS IN MILLI SECONDS
+                })
+            }
         },
         dataTable_fun: function () {
-
-            $('#dataTables-example').dataTable();
-
+            if ($('#dataTables-example').length > 0) {
+                if ($.fn.dataTable) {
+                    $('#dataTables-example').dataTable();
+                }
+            }
         },
        
         custom_fun:function()
